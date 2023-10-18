@@ -11,15 +11,18 @@ import bank.model.Client;
 @Stateless
 public class BankService implements BankServiceLocal {
 
-    public void createClient(Client client) {
+    @Override
+	public void createClient(Client client) {
     	
     }
     
-    public void createAccountForClient(Account account, int clientId) throws BankException {
+    @Override
+	public void createAccountForClient(Account account, int clientId) throws BankException {
     	
     }
     
-    public void transfer(int fromAccountId, int toAccountId, double amount) throws BankException {
+    @Override
+	public void transfer(int fromAccountId, int toAccountId, double amount) throws BankException {
     	
     }
 }
