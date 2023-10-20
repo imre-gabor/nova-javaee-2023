@@ -32,6 +32,10 @@ public class Account implements Serializable {
 	public Account() {
 	}
 
+	public Account(double balance) {
+		this.balance = balance;
+	}
+
 	public Integer getAccountid() {
 		return this.accountid;
 	}
