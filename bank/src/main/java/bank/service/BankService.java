@@ -6,11 +6,15 @@ import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import bank.dao.AccountDao;
 import bank.dao.ClientDao;
+import bank.dao.HistoryDao;
 import bank.model.Account;
 import bank.model.Client;
+import bank.model.History;
 
 /**
  * Session Bean implementation class BankService
@@ -22,8 +26,12 @@ public class BankService implements BankServiceLocal {
 	private ClientDao clientDao;
 	@EJB
 	private AccountDao accountDao;
+	@EJB
+	private HistoryDao historyDao;
+	@EJB
+	private HistoryService historyService;
 	@Resource
-	SessionContext ctx;
+	private SessionContext ctx;
 	
 
     @Override
@@ -52,8 +60,10 @@ public class BankService implements BankServiceLocal {
     	if(fromAccount == null || toAccount == null)
     		throw new BankException("Both account ids should exists");
     	try {
+//    		historyService.logTransfer(fromAccountId, toAccountId, amount);
+    		ctx.getBusinessObject(BankServiceLocal.class).logTransfer(fromAccountId, toAccountId, amount);
     		toAccount.increase(amount);
-    		fromAccount.decrease(amount);
+    		fromAccount.decrease(amount);    		
     	} catch (Exception e) {
 			ctx.setRollbackOnly();
 			throw e;
@@ -67,6 +77,18 @@ public class BankService implements BankServiceLocal {
     	 * 2. @ApplicationException(rollback = true) 
     	 * 3. ejbCtxt.setRollbackOnly()
     	 */
-    	
+    }
+    
+    /*
+     * A requires_new (és semmilyen tranzakciós vagy security vagy egyéb annotáció) nem működik, 
+     * ha lokálisan hívott metóduson van. Lehetséges megoldások:
+     * 1. Metódus kiszervezése külön EJB-be
+     * 2. Hívás ctx.getBusinessObject() metóduson keresztül
+     */
+    @Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)    
+    public void logTransfer(int fromAccountId, int toAccountId, double amount) {
+    	historyDao.create(
+    			new History(String.format("Transfering %f from %d to %d", amount, fromAccountId, toAccountId)));
     }
 }
