@@ -2,6 +2,9 @@ package bank.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import bank.service.BankException;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -35,6 +38,21 @@ public class Account implements Serializable {
 	public Account(double balance) {
 		this.balance = balance;
 	}
+	
+	
+	public void increase(double amount) {
+		if(amount < 0)
+			throw new IllegalArgumentException("amount should positive");
+		this.balance += amount;
+	}
+	
+	public void decrease(double amount) throws BankException {
+		if(amount < 0)
+			throw new IllegalArgumentException("amount should positive");
+		if(this.balance < amount)
+			throw new BankException("Balance is not enough");
+		this.balance -= amount;
+	}
 
 	public Integer getAccountid() {
 		return this.accountid;
@@ -46,10 +64,6 @@ public class Account implements Serializable {
 
 	public double getBalance() {
 		return this.balance;
-	}
-
-	public void setBalance(double balance) {
-		this.balance = balance;
 	}
 
 	public Date getCreatedate() {
