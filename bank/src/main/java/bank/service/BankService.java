@@ -1,11 +1,16 @@
 package bank.service;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
+import javax.ejb.TimerService;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
@@ -34,6 +39,8 @@ public class BankService implements BankServiceLocal {
 	private HistoryService historyService;
 	@Resource
 	private SessionContext ctx;
+	@Resource
+	private TimerService timerService;
 	
 
     @Override
@@ -54,19 +61,59 @@ public class BankService implements BankServiceLocal {
     	accountDao.create(account);
     }
     
+    private static class TransferRequest implements Serializable {
+    	int fromAccountId;
+    	int toAccountId;
+    	double amount;
+    	
+    	public TransferRequest() {
+		}
+    	
+		public TransferRequest(int fromAccountId, int toAccountId, double amount) {
+			super();
+			this.fromAccountId = fromAccountId;
+			this.toAccountId = toAccountId;
+			this.amount = amount;
+		}
+    	
+    }
+    
+    @Override
+	public void scheduleTransfer(int fromAccountId, int toAccountId, double amount, long delayInSec) {
+    	timerService.createSingleActionTimer(delayInSec * 1000, new TimerConfig(new TransferRequest(fromAccountId, toAccountId, amount), false));
+    }
+    
+    @Timeout
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public void executeScheduledTransfer(Timer timer) {
+    	TransferRequest transferRequest = (TransferRequest) timer.getInfo();
+    	try {
+    		transfer(transferRequest.fromAccountId, transferRequest.toAccountId, transferRequest.amount);
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    
     @Override
 	public void transfer(int fromAccountId, int toAccountId, double amount) throws BankException {
+
+//		historyService.logTransfer(fromAccountId, toAccountId, amount);
+		BankServiceLocal self = ctx.getBusinessObject(BankServiceLocal.class);
+		int historyId = self.logTransfer(fromAccountId, toAccountId, amount);
+
+		try {
     	
-    	Account fromAccount = accountDao.findById(fromAccountId);
-    	Account toAccount = accountDao.findById(toAccountId);
-    	if(fromAccount == null || toAccount == null)
-    		throw new BankException("Both account ids should exists");
-    	try {
-//    		historyService.logTransfer(fromAccountId, toAccountId, amount);
-    		ctx.getBusinessObject(BankServiceLocal.class).logTransfer(fromAccountId, toAccountId, amount);
+	    	Account fromAccount = accountDao.findById(fromAccountId);
+	    	Account toAccount = accountDao.findById(toAccountId);
+	    	if(fromAccount == null || toAccount == null)
+	    		throw new BankException("Both account ids should exists");
+    	
     		toAccount.increase(amount);
-    		fromAccount.decrease(amount);    		
+    		fromAccount.decrease(amount);
+    		self.logTransferResult(historyId, true);
     	} catch (Exception e) {
+			self.logTransferResult(historyId, false);
 			ctx.setRollbackOnly();
 			throw e;
 		}
@@ -89,8 +136,17 @@ public class BankService implements BankServiceLocal {
      */
     @Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)    
-    public void logTransfer(int fromAccountId, int toAccountId, double amount) {
-    	historyDao.create(
-    			new History(String.format("Transfering %f from %d to %d", amount, fromAccountId, toAccountId)));
+    public int logTransfer(int fromAccountId, int toAccountId, double amount) {
+    	History history = new History(String.format("Transfering %f from %d to %d", amount, fromAccountId, toAccountId));
+		historyDao.create(history);
+		return history.getId();
     }
+    
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void logTransferResult(int historyId, boolean success) {
+    	History history = historyDao.findById(historyId);
+    	history.setSuccess(success);
+    }
+    
 }

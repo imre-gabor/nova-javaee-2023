@@ -32,11 +32,14 @@ public class TransferServlet extends HttpServlet {
 		String message = null;
 		
 		try {			
-			bank.transfer(from, to, amount);
-			message = "Transfer was successful";
+//			bank.transfer(from, to, amount);
+			bank.scheduleTransfer(from, to, amount, 10);
+//			message = "Transfer was successful";
+			message = "Transfer was successfully scheduled.";
 		} catch (Exception e) {
 			e.printStackTrace();
-			message = "Transfer failed: " + e.getMessage();
+//			message = "Transfer failed: " + e.getMessage();
+			message = "Transfer schedule failed: " + e.getMessage();
 		}
 		
 		request.setAttribute("resultOfTransfer", message);

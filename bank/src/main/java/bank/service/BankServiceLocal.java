@@ -16,6 +16,10 @@ public interface BankServiceLocal {
 
 	void createClient(Client client);
 
-	void logTransfer(int fromAccountId, int toAccountId, double amount);
+	int logTransfer(int fromAccountId, int toAccountId, double amount);
+
+	void logTransferResult(int historyId, boolean success);
+
+	void scheduleTransfer(int fromAccountId, int toAccountId, double amount, long delayInSec);
 
 }

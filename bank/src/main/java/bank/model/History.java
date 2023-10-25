@@ -19,6 +19,8 @@ public class History {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date ts;
+	
+	private Boolean success;
 
 	public History() {	
 	}
@@ -51,4 +53,13 @@ public class History {
 	public void setTs(Date ts) {
 		this.ts = ts;
 	}
+	
+	public Boolean getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
+	}
+
 }
