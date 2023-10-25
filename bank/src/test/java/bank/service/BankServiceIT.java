@@ -14,6 +14,8 @@ import javax.ejb.EJB;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.arquillian.transaction.api.annotation.TransactionMode;
+import org.jboss.arquillian.transaction.api.annotation.Transactional;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
@@ -26,6 +28,7 @@ import bank.model.Account;
 import bank.model.Client;
 
 @ExtendWith(ArquillianExtension.class)
+@Transactional(value = TransactionMode.ROLLBACK)
 public class BankServiceIT {
 
 	@EJB
@@ -83,5 +86,29 @@ public class BankServiceIT {
 		assertThat(accountInDb.getCreatedate()).isToday();
 		assertThat(accountInDb.getClient()).isEqualTo(client);
 	}
+	
+	//a unique name miatt ez és az előző közül csak egy tud lefutni
+	//1. megoldás: @BeforeEach metódusban táblák ürítése
+	//2. megoldás: minden teszt metódus végén rollback legyen
+	@Test
+	public void testAccountProperlyCreatedForExsitingClient2() throws Exception {
+		//ARRANGE
+		Client client = new Client();
+		client.setName("client1");
+		client.setAddress("address1");
+		clientDao.create(client);
+		int clientId = client.getClientid();
+		Account account = new Account(100.0);
+		
+		//ACT
+		bankService.createAccountForClient(account, clientId);
+		
+		//ASSERT
+		Account accountInDb = accountDao.findById(account.getAccountid());
+		assertThat(accountInDb.getBalance()).isEqualTo(100);
+		assertThat(accountInDb.getCreatedate()).isToday();
+		assertThat(accountInDb.getClient()).isEqualTo(client);
+	}
+
 
 }

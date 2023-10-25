@@ -2,6 +2,8 @@ package bank.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,20 +13,21 @@ import java.util.Objects;
  * 
  */
 @Entity
-@NamedQuery(name="Client.findAll", query="SELECT c FROM Client c")
+@Table(name = "client", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
+@NamedQuery(name = "Client.findAll", query = "SELECT c FROM Client c")
 public class Client implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer clientid;
 
 	private String address;
 
 	private String name;
 
-	//bi-directional many-to-one association to Account
-	@OneToMany(mappedBy="client")
+	// bi-directional many-to-one association to Account
+	@OneToMany(mappedBy = "client")
 	private List<Account> accounts;
 
 	public Client() {
@@ -61,6 +64,8 @@ public class Client implements Serializable {
 	}
 
 	public List<Account> getAccounts() {
+		if (this.accounts == null)
+			this.accounts = new ArrayList<Account>();
 		return this.accounts;
 	}
 
@@ -98,7 +103,5 @@ public class Client implements Serializable {
 		Client other = (Client) obj;
 		return Objects.equals(clientid, other.clientid);
 	}
-	
-	
 
 }
