@@ -1,6 +1,7 @@
 package bank.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import javax.ejb.TimerService;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
+import javax.persistence.criteria.Predicate;
 
 import bank.dao.AccountDao;
 import bank.dao.ClientDao;
@@ -151,8 +153,9 @@ public class BankService implements BankServiceLocal {
     }
     
     
-//    public List<Account> findByExample(Account example) {
-//    	
-//    }
+    @Override
+	public List<Account> findByExample(Account example) {
+    	return accountDao.findByExample(example);
+    }
     
 }

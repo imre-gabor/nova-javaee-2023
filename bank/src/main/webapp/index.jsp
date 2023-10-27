@@ -13,15 +13,19 @@
 	<h1>Test Page for BankOperator</h1>
 
 	<h2>Search Client</h2>
-	<form action="SearchClientServlet">
+	<form action="SearchAccountServlet">
 		<table>
 			<tr>
-				<td>Name:</td>
-				<td><input type="text" name="name" /></td>
+				<td>Account id:</td>
+				<td><input type="text" name="accountid" /></td>
 			</tr>
 			<tr>
-				<td>Address:</td>
-				<td><input type="text" name="address" /></td>
+				<td>Balance:</td>
+				<td><input type="text" name="balance" /></td>
+			</tr>
+			<tr>
+				<td>Create date:</td>
+				<td><input type="text" name="createdate" /></td>
 			</tr>
 			<tr>
 				<td>Client id:</td>
@@ -37,17 +41,17 @@
 	<table>
 		<thead>
 			<tr>
-				<th>Client id</th>
-				<th>Name</th>
-				<th>Address</th>
+				<th>Account id</th>
+				<th>Balance</th>
+				<th>Create date</th>
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="client" items="${clients}">
+			<c:forEach var="account" items="${accounts}">
 				<tr>
-					<td>${client.clientid}</td>
-					<td>${client.name}</td>
-					<td>${client.address}</td>
+					<td>${account.accountid}</td>
+					<td>${account.balance}</td>
+					<td>${account.createdate}</td>
 				</tr>
 			</c:forEach>
 		

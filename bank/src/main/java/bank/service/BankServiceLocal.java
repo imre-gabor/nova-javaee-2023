@@ -1,5 +1,7 @@
 package bank.service;
 
+import java.util.List;
+
 import javax.ejb.Local;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -21,5 +23,7 @@ public interface BankServiceLocal {
 	void logTransferResult(int historyId, boolean success);
 
 	void scheduleTransfer(int fromAccountId, int toAccountId, double amount, long delayInSec);
+
+	List<Account> findByExample(Account example);
 
 }

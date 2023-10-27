@@ -23,7 +23,7 @@ import bank.model.Client;
 public class BankServiceTest {
 	
 	@InjectMocks
-	BankService bankService;
+	BankServiceLocal bankService;
 	
 	@Mock
 	ClientDao clientDao;
