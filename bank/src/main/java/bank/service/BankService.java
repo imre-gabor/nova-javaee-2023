@@ -2,6 +2,7 @@ package bank.service;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -148,5 +149,10 @@ public class BankService implements BankServiceLocal {
     	History history = historyDao.findById(historyId);
     	history.setSuccess(success);
     }
+    
+    
+//    public List<Account> findByExample(Account example) {
+//    	
+//    }
     
 }
