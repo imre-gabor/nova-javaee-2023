@@ -105,18 +105,21 @@ public class BankService implements BankServiceLocal {
 		BankServiceLocal self = ctx.getBusinessObject(BankServiceLocal.class);
 		int historyId = self.logTransfer(fromAccountId, toAccountId, amount);
 
+		Client client = null;
 		try {
     	
 	    	Account fromAccount = accountDao.findById(fromAccountId);
+	    	client = fromAccount.getClient();
 	    	Account toAccount = accountDao.findById(toAccountId);
 	    	if(fromAccount == null || toAccount == null)
 	    		throw new BankException("Both account ids should exists");
     	
+	    	
     		toAccount.increase(amount);
     		fromAccount.decrease(amount);
-    		self.logTransferResult(historyId, true);
+    		self.logTransferResult(historyId, true, client);
     	} catch (Exception e) {
-			self.logTransferResult(historyId, false);
+			self.logTransferResult(historyId, false, client);
 			ctx.setRollbackOnly();
 			throw e;
 		}
@@ -147,8 +150,9 @@ public class BankService implements BankServiceLocal {
     
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void logTransferResult(int historyId, boolean success) {
+	public void logTransferResult(int historyId, boolean success, Client client) {
     	History history = historyDao.findById(historyId);
+    	history.setClient(client);
     	history.setSuccess(success);
     }
     
@@ -156,6 +160,14 @@ public class BankService implements BankServiceLocal {
     @Override
 	public List<Account> findByExample(Account example) {
     	return accountDao.findByExample(example);
+    }
+    
+    @Override
+    public List<Client> findAllWithAllRelationships() {
+    	List<Client> clients = clientDao.findAllWithEntityGraph("Client.egWithRelationships");
+    	clientDao.findAllWithEntityGraph("Client.egWithHistory");
+    	
+    	return clients;
     }
     
 }

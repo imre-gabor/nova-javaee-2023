@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -21,6 +22,9 @@ public class History {
 	private Date ts;
 	
 	private Boolean success;
+	
+	@ManyToOne
+	private Client client;
 
 	public History() {	
 	}
@@ -60,6 +64,14 @@ public class History {
 
 	public void setSuccess(Boolean success) {
 		this.success = success;
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
 }

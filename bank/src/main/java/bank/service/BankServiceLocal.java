@@ -20,10 +20,12 @@ public interface BankServiceLocal {
 
 	int logTransfer(int fromAccountId, int toAccountId, double amount);
 
-	void logTransferResult(int historyId, boolean success);
+	void logTransferResult(int historyId, boolean success, Client client);
 
 	void scheduleTransfer(int fromAccountId, int toAccountId, double amount, long delayInSec);
 
 	List<Account> findByExample(Account example);
+
+	List<Client> findAllWithAllRelationships();
 
 }

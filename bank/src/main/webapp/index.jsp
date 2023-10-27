@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -13,14 +14,17 @@
 	<h1>Test Page for BankOperator</h1>
 
 	<form action="FindClientsServlet">
-		<input type="submit" value="Find clients"/>
+		<input type="submit" value="Find clients"/>		
 	</form>
+	<h2>Result of findAll (or other custom queries)</h2>
 	<table>
 		<thead>
 			<tr>
 				<th>Client id</th>
 				<th>Name</th>
 				<th>Address</th>
+				<th>Number of accounts</th>
+				<th>Number of history logs</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -29,12 +33,33 @@
 					<td>${client.clientid}</td>
 					<td>${client.name}</td>
 					<td>${client.address}</td>
+					<td>${fn:length(client.accounts)}</td>
+					<td>${fn:length(client.historyLogs)}</td>
 				</tr>
 			</c:forEach>
 		
 		</tbody>
 	</table>
-
+	
+	<h2>Result of find (by id)</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Client id</th>
+				<th>Name</th>
+				<th>Address</th>
+				<th>Number of accounts</th>
+			</tr>
+		</thead>
+		<tbody>			
+				<tr>
+					<td>${client.clientid}</td>
+					<td>${client.name}</td>
+					<td>${client.address}</td>
+					<td>${fn:length(client.accounts)}</td>
+				</tr>
+		</tbody>
+	</table>
 
 
 	<h2>Search account</h2>

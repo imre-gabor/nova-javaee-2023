@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -71,7 +72,7 @@ public class BankServiceTest {
 		//ARRANGE
 		Client client = new Client();
 		client.setClientid(1);
-		client.setAccounts(new ArrayList<>());
+		client.setAccounts(new HashSet<>());
 		when(clientDao.findById(1)).thenReturn(client);
 		Account account = new Account(100.0);
 		

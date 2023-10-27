@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import bank.dao.ClientDao;
 import bank.model.Account;
 import bank.model.Client;
+import bank.model.Client_;
+import bank.service.BankService;
 import bank.service.BankServiceLocal;
 
 /**
@@ -28,11 +30,22 @@ public class FindClientsServlet extends HttpServlet {
 	@EJB
 	ClientDao clientDao;
 	
+	@EJB
+	BankServiceLocal bankService;
+	
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			List<Client> clients = clientDao.findAll();
+			//List<Client> clients = clientDao.findAll();
+			//7. megoldás LazyInit ellen
+//			List<Client> clients = clientDao.findAllWithFetch(Client_.accounts);
+			//8. megoldás LazyInit ellen
+//			List<Client> clients = clientDao.findAllWithEntityGraph("Client.egWithRelationships");
+			//több kapcsolat esetén, Descartes-szorzat elkerülésére
+			List<Client> clients = bankService.findAllWithAllRelationships();
 			request.setAttribute("clients", clients);
+//			System.out.println("calling findById");
+//			request.setAttribute("client", clientDao.findById(1));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
