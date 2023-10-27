@@ -12,7 +12,32 @@
 
 	<h1>Test Page for BankOperator</h1>
 
-	<h2>Search Client</h2>
+	<form action="FindClientsServlet">
+		<input type="submit" value="Find clients"/>
+	</form>
+	<table>
+		<thead>
+			<tr>
+				<th>Client id</th>
+				<th>Name</th>
+				<th>Address</th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach var="client" items="${clients}">
+				<tr>
+					<td>${client.clientid}</td>
+					<td>${client.name}</td>
+					<td>${client.address}</td>
+				</tr>
+			</c:forEach>
+		
+		</tbody>
+	</table>
+
+
+
+	<h2>Search account</h2>
 	<form action="SearchAccountServlet">
 		<table>
 			<tr>
