@@ -15,9 +15,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import bank.validator.ContainsZipCode;
 
 
 /**
@@ -56,8 +60,11 @@ public class Client implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer clientid;
 
+	@NotNull
+	@ContainsZipCode(requiredDigits = 5)
 	private String address;
 
+	@NotBlank
 	private String name;
 
 	// bi-directional many-to-one association to Account
