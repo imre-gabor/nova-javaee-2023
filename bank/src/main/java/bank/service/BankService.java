@@ -159,7 +159,8 @@ public class BankService implements BankServiceLocal {
     
     @Override
 	public List<Account> findByExample(Account example) {
-    	return accountDao.findByExample(example);
+    	//return accountDao.findByExample(example);
+    	return accountDao.findByExample2(example);
     }
     
     @Override
