@@ -35,7 +35,6 @@ public class NewOrder extends HttpServlet {
 			dataBean.setDepart(df.parse(request.getParameter("depart")));
 			dataBean.setFlightId(request.getParameter("flightId"));
 			dataBean.setSeats(Integer.valueOf(request.getParameter("seat")));
-			dataBean.setStatus(Status.PENDING);
 			orderHandlerBean.createNewOrder(dataBean);
 			request.getRequestDispatcher("index.jsp")
 					.forward(request, response);
